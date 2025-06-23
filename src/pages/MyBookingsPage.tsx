@@ -5,7 +5,7 @@ import apiClient from '../api/client';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import QRCode from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 import { format } from 'date-fns';
 
 interface Booking {
@@ -93,7 +93,7 @@ const MyBookingsPage: React.FC = () => {
         {booking.status.toLowerCase() === 'confirmed' && booking.qr_code_token && (
           <div className="flex flex-col items-center space-y-2 mb-4">
             <p className="text-sm font-medium text-gray-700">Your QR Code:</p>
-            <QRCode value={booking.qr_code_token} size={128} />
+            <QRCodeSVG value={booking.qr_code_token} size={128} />
             <p className="text-xs text-gray-500 text-center">
               Show this QR code for check-in
             </p>

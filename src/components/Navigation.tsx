@@ -3,7 +3,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './ui/button';
-import { LogOut, User, Calendar, Settings } from 'lucide-react';
+import { LogOut, User, Calendar, Settings, QrCode } from 'lucide-react';
 
 const Navigation: React.FC = () => {
   const { user, logout } = useAuth();

@@ -69,7 +69,6 @@ const CheckInPage: React.FC = () => {
                         handleError(error);
                       }
                     }}
-                    style={{ width: '100%' }}
                     constraints={{
                       facingMode: 'environment'
                     }}
