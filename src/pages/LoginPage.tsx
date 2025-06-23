@@ -12,13 +12,24 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect if already authenticated
+  React.useEffect(() => {
+    console.log('LoginPage: Checking authentication status:', isAuthenticated);
+    if (isAuthenticated) {
+      console.log('User is already authenticated, redirecting to dashboard');
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+
+    console.log('Attempting login with username:', username);
 
     try {
       const response = await apiClient.post('/api/auth/jwt/create/', {
@@ -26,11 +37,19 @@ const LoginPage: React.FC = () => {
         password
       });
 
+      console.log('Login API response status:', response.status);
+      console.log('Login API response data:', response.data);
+
       if (response.status === 200) {
+        console.log('Login successful, calling login function');
         login(response.data.access);
+        console.log('Navigating to dashboard');
         navigate('/dashboard');
       }
     } catch (err: any) {
+      console.error('Login error:', err);
+      console.error('Error response:', err.response?.data);
+      
       if (err.response?.status === 401) {
         setError('Invalid credentials. Please try again.');
       } else {
@@ -100,6 +119,16 @@ const LoginPage: React.FC = () => {
                 Register
               </Link>
             </p>
+          </div>
+          
+          {/* Test credentials for debugging */}
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <p className="text-sm font-medium text-blue-800 mb-2">Test Credentials:</p>
+            <div className="text-xs text-blue-700 space-y-1">
+              <p>User: testuser / password123</p>
+              <p>Admin: admin / admin123</p>
+              <p>User: john_doe / library2024</p>
+            </div>
           </div>
         </CardContent>
       </Card>

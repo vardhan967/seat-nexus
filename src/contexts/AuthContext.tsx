@@ -38,13 +38,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const decodeJWT = (token: string): User | null => {
     try {
+      console.log('Attempting to decode JWT token:', token.substring(0, 50) + '...');
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));
       
-      return JSON.parse(jsonPayload);
+      const decoded = JSON.parse(jsonPayload);
+      console.log('Successfully decoded user from JWT:', decoded);
+      return decoded;
     } catch (error) {
       console.error('Error decoding JWT:', error);
       return null;
@@ -52,13 +55,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const login = (token: string) => {
+    console.log('Login function called with token');
     localStorage.setItem('authToken', token);
     setAuthToken(token);
     const decodedUser = decodeJWT(token);
-    setUser(decodedUser);
+    if (decodedUser) {
+      setUser(decodedUser);
+      console.log('User set successfully:', decodedUser);
+    } else {
+      console.error('Failed to decode user from token');
+    }
   };
 
   const logout = () => {
+    console.log('Logout function called');
     localStorage.removeItem('authToken');
     setAuthToken(null);
     setUser(null);
@@ -66,19 +76,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
+    console.log('Checking for stored token on app load:', storedToken ? 'Token found' : 'No token found');
     if (storedToken) {
       setAuthToken(storedToken);
       const decodedUser = decodeJWT(storedToken);
-      setUser(decodedUser);
+      if (decodedUser) {
+        setUser(decodedUser);
+        console.log('User restored from stored token:', decodedUser);
+      }
     }
   }, []);
+
+  const isAuthenticated = !!user && !!authToken;
+  console.log('Authentication state:', { isAuthenticated, hasUser: !!user, hasToken: !!authToken });
 
   const value = {
     user,
     authToken,
     login,
     logout,
-    isAuthenticated: !!user && !!authToken
+    isAuthenticated
   };
 
   return (
